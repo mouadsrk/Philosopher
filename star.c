@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/13 11:32:47 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/13 15:32:19 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int Death(t_list *philo)
 	{
 		if(tmp->last_eat >= philo->t_die)
 			{
-			printf("philo %d is death",tmp->num);
+			printf("philo %d is death\n",tmp->num);
 				exit(0);
 			}
 		if( tmp->num == philo->philo_num)
@@ -31,6 +31,20 @@ int Death(t_list *philo)
 	return 0;
 }
 
+int max_eat(t_list *philo)
+{
+	int i;
+
+	i = 0;
+	while(i < philo->philo_num)
+	{
+		if(philo->num_eat < philo->max_eat)
+			return 0;
+		philo = philo->next;
+		i++;
+	}
+	return 1;
+}
 
 void	think(t_list *philo)
 {
@@ -56,11 +70,13 @@ void*  eat(void *tmp)
 
 	philo = (t_list *) tmp;
 	if(philo->num % 2 == 0 && philo->num != 1)
-		usleep(400);
-	pthread_mutex_lock( &philo->fork_m);
+		usleep(300);
+	pthread_mutex_lock( &philo->fork_m); 
 	pthread_mutex_lock( &philo->next->fork_m);
 	philo->waiting = 0;
 	philo->act += 1;
+	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
+		exit(0);
 	printf("%d philo %d take fork!\n%d philo %d take fork!\n",philo->now,philo->num ,philo->now,philo->num);
 	printf("%d philo %d is eating\n" ,philo->now,philo->num);
 	usleep(philo->t_eat);
@@ -68,10 +84,16 @@ void*  eat(void *tmp)
 	if(philo->next->waiting == 1)
 		philo->next->now = philo->now;
 	philo->num_eat += 1;
+	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
+		exit(0);
 	pthread_mutex_unlock(&philo->fork_m);
 	pthread_mutex_unlock(&philo->next->fork_m);
 	philo->last_eat = 0;
+	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
+		exit(0);
 	ft_sleep(philo);
+	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
+		exit(0);
 	think(philo);
 	return NULL;
 }
@@ -101,29 +123,15 @@ void    star_rotine(void *philo)
 	}
 }
 
-int max_eat(t_list *philo)
-{
-	int i;
 
-	i = 0;
-	while(i < philo->philo_num)
-	{
-		if(philo->num_eat < philo->max_eat)
-			return 0;
-		philo = philo->next;
-		i++;
-	}
-	return 1;
-}
-
-
-void *check_rotine(void *philo)
+void *check_life(void *philo)
 {
 	t_list *tmp;
-
+	int i;
+	
 	tmp = (t_list*) philo;
-	while(!Death(philo) && ((!max_eat(philo) && tmp->max_eat != -1) || tmp->max_eat == -1 ) )
-		star_rotine(philo);
+	while(!Death(tmp) && ((!max_eat(tmp) && tmp->max_eat != -1) || tmp->max_eat == -1 ) )
+		i++;
 	exit(0);
 	return NULL;
 }
@@ -131,7 +139,9 @@ void *check_rotine(void *philo)
 
 void	star(t_list *philo)
 {
-	pthread_create(&philo->c_run, NULL,&check_rotine,philo);
+	// pthread_create(&philo->c_run, NULL,&check_life,philo);
+	while(!Death(philo) && ((!max_eat(philo) && philo->max_eat != -1) || philo->max_eat == -1 ) )
+		star_rotine(philo);	
 	pthread_join(philo->c_run,NULL);
 	exit(0);
 }
