@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:04 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/13 05:24:58 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/13 11:18:41 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,19 +29,23 @@ struct timeval tv ,mv;
 
 typedef struct s_list
 {
+	pthread_mutex_t print;
+	pthread_t		c_run;
 	pthread_mutex_t fork_m;
 	pthread_t		eat_time;
+	int				act;
 	int				num;
 	int				num_eat;
-	useconds_t		last_eat;
-	struct s_list	*next;
-	struct s_list	*  previous;
+	int				max_eat;
 	int 			philo_num;
+	int				waiting;
 	useconds_t 		t_die;
 	useconds_t 		t_eat;
 	useconds_t		t_sleep;
-	int				max_eat;
-	useconds_t		star;
+	useconds_t		now;
+	useconds_t		last_eat;
+	struct s_list	*next;
+	struct s_list	* previous;
 }	t_list;
 
 int	ft_isdigit(int c);

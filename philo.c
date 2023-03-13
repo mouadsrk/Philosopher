@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/13 04:48:35 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/13 05:33:49 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ void data_make(int arc, char ** argv, t_list **philo)
 	i = 1;
 	(*philo) = ft_lstnew(1);
 	(*philo)->philo_num = ft_atoi(argv[1]);
-	(*philo)->t_die = ft_atoi(argv[2]);
+	(*philo)->t_die = (useconds_t )ft_atoi(argv[2]);
 	(*philo)->t_eat = (useconds_t ) ft_atoi(argv[3]);
-	(*philo)->t_sleep = ft_atoi(argv[4]);
+	(*philo)->t_sleep = (useconds_t )ft_atoi(argv[4]);
 	if( arc == 6)
 		(*philo)->max_eat = ft_atoi(argv[5]);
 	tmp = *philo;
