@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/13 05:33:49 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/17 13:21:50 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ void data_make(int arc, char ** argv, t_list **philo)
 		tmp->t_sleep = (*philo)->t_sleep;
 		tmp->max_eat = (*philo)->max_eat; 
 		tmp->philo_num = (*philo)->philo_num ;
-		tmp->previous = tmp2;
+		tmp->head = (*philo);
 	}
 	tmp->next = *philo;
-	(*philo)->previous = tmp;
+	(*philo)->head = (*philo);
 }
 
 

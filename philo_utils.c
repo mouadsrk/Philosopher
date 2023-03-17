@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:02 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/13 10:25:09 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/17 12:05:10 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ t_list	*ft_lstnew(int content)
 	s = malloc (sizeof(t_list));
 	if (s == NULL)
 		return (NULL);
-	s->act = 0;
+	// s->act = 0;
 	s->waiting = 1;
 	s->max_eat = -1; 
 	s->num_eat = 0;
