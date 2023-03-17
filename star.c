@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/13 15:32:19 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/17 11:04:04 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void	ft_sleep(t_list *philo)
 	usleep(philo->t_sleep);
 	philo->now += philo->t_sleep;
 	philo->last_eat += philo->t_sleep;
-	philo->waiting = 1;
 }
 
 void*  eat(void *tmp)
@@ -71,24 +70,29 @@ void*  eat(void *tmp)
 	philo = (t_list *) tmp;
 	if(philo->num % 2 == 0 && philo->num != 1)
 		usleep(300);
+	philo->waiting = 1;
 	pthread_mutex_lock( &philo->fork_m); 
 	pthread_mutex_lock( &philo->next->fork_m);
 	philo->waiting = 0;
 	philo->act += 1;
-	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
-		exit(0);
+	// if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
+	// 	exit(0);
 	printf("%d philo %d take fork!\n%d philo %d take fork!\n",philo->now,philo->num ,philo->now,philo->num);
 	printf("%d philo %d is eating\n" ,philo->now,philo->num);
 	usleep(philo->t_eat);
+	philo->last_eat = 0;
 	philo->now += philo->t_eat;
 	if(philo->next->waiting == 1)
+	{
 		philo->next->now = philo->now;
+		philo->next->last_eat = philo->t_eat;
+	}
 	philo->num_eat += 1;
+	philo->last_eat = philo->t_eat;
 	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
 		exit(0);
 	pthread_mutex_unlock(&philo->fork_m);
 	pthread_mutex_unlock(&philo->next->fork_m);
-	philo->last_eat = 0;
 	if (Death(philo) || ((max_eat(philo) && philo->max_eat != -1)))
 		exit(0);
 	ft_sleep(philo);
