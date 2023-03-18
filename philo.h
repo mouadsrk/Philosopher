@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:04 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/17 13:19:39 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/18 21:35:54 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # define PHILO_H
 
 
-
+#include<fcntl.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,19 +32,19 @@ typedef struct s_list
 	// pthread_mutex_t print;
 	// pthread_t		c_run;
 	pthread_mutex_t fork_m;
-	pthread_mutex_t wait;
 	pthread_mutex_t death_p;
 	pthread_t		eat_time;
+	int				death_satus;
 	int				num;
 	int				num_eat;
 	int				max_eat;
 	int 			philo_num;
 	int				waiting;
-	useconds_t 		t_die;
-	useconds_t 		t_eat;
-	useconds_t		t_sleep;
-	useconds_t		now;
-	useconds_t		last_eat;
+	int		t_die;
+	int		t_eat;
+	int		t_sleep;
+	int		now;
+	int		last_eat;
 	struct s_list	*next;
 	struct s_list	*head;
 }	t_list;

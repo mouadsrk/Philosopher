@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/17 13:21:50 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/18 21:36:41 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void data_make(int arc, char ** argv, t_list **philo)
 		tmp->head = (*philo);
 	}
 	tmp->next = *philo;
+	(*philo)->death_satus = 0;
 	(*philo)->head = (*philo);
 }
 
@@ -73,6 +74,9 @@ void check_arg(int arc, char **argv)
 
 int main (int arc , char ** argv)
 {
+	int fd = open("txt", O_CREAT | O_WRONLY ,0777 );
+	dup2(fd,1);
+	close(fd);
 	t_list	*philo;
 	t_list *tmp;
 	int i;
