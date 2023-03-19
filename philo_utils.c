@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:02 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/17 12:05:10 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/19 00:59:57 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,6 @@ t_list	*ft_lstnew(int content)
 	s = malloc (sizeof(t_list));
 	if (s == NULL)
 		return (NULL);
-	// s->act = 0;
-	s->waiting = 1;
 	s->max_eat = -1; 
 	s->num_eat = 0;
 	s->now = 0;
@@ -90,24 +88,10 @@ void ft_putchar(char c)
 	write(1, &c, 1 );
 }
 
-void	ft_putnbr(int n)
+long time_init(void)
 {
-	if (n == -2147483648)
-	{
-		write(1, "-2147483648", 11);
-		return ;
-	}
-	if (n < 0)
-	{
-		n *= -1;
-		ft_putchar('-');
-	}
-	if (n <= 9)
-		ft_putchar(n + 48);
-	if (n >= 10)
-	{
-		ft_putnbr(n / 10);
-		ft_putchar(n % 10 + 48);
-	}
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 

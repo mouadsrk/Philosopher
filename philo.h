@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:04 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/18 21:35:54 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/19 01:01:15 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,19 @@ typedef struct s_list
 	int				num_eat;
 	int				max_eat;
 	int 			philo_num;
-	int				waiting;
-	int		t_die;
-	int		t_eat;
-	int		t_sleep;
-	int		now;
-	int		last_eat;
+	// int				waiting;
+	int				t_die;
+	int				t_eat;
+	int				t_sleep;
+	long				beging;
+	long				now;
+	long				last_eat;
 	struct s_list	*next;
 	struct s_list	*head;
 }	t_list;
 
+
+long time_init(void);
 int	ft_isdigit(int c);
 void	exit_error(char *str);
 void	ft_lstclear(t_list	**lst);

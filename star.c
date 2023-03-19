@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/18 21:56:55 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/19 01:37:27 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,22 @@
 
 int death(t_list *philo)
 {
-	t_list *tmp;
-	tmp = philo;
 
+	philo = philo->head;
 	if(philo->head->death_satus == 1)
 		return 1;
-	while( tmp->num <= philo->philo_num)
+	while( philo->num <= philo->philo_num)
 	{
-		if(tmp->last_eat >= philo->t_die)
+		if(philo->now - philo->last_eat >= philo->t_die)
 			{
-				if(philo->head->death_satus == 0)
-				{
-					printf("philo %d is death\n",tmp->num);
-					philo->head->death_satus = 1;
-				}
+				philo->now = time_init() - philo->beging;
+				printf("%ld philo %d is death\n",philo->now,philo->num);
+				philo->head->death_satus = 1;
 				return 1;
 			}
-		if( tmp->num == philo->philo_num)
+		if( philo->num == philo->philo_num)
 			break;
-		tmp = tmp->next;
+		philo = philo->next;
 	}
 	return 0;
 }
@@ -61,58 +58,49 @@ int lock_check_life_data(t_list *tmp)
 			pthread_mutex_unlock(&tmp->head->death_p);
 			return 0;
 		}
-	pthread_mutex_unlock(&tmp->head->death_p);
 	return 1;
 }
 
 int	think(t_list *philo)
 {
-	// if(!lock_check_life_data(philo))
-	// 	return 0;
-	printf("%d philo %d is thinking!\n" ,philo->now, philo->num);
+	if(!lock_check_life_data(philo))
+		return 0;
+	pthread_mutex_unlock(&philo->head->death_p);
+	philo->now = time_init() - philo->beging;
+	printf("%ld philo %d is thinking!\n" ,philo->now, philo->num);
 	return 1;
 }
 
 int	ft_sleep(t_list *philo)
 {
-	// if(!lock_check_life_data(philo))
-	// 	return 0;
-	printf("%d philo %d is sleeping!\n" ,philo->now,philo->num);
-	usleep(philo->t_sleep);
-	// philo->now += philo->t_sleep;
-	// philo->last_eat += philo->t_sleep;
+	if(!lock_check_life_data(philo))
+		return 0;
+	pthread_mutex_unlock(&philo->head->death_p);
+	philo->now = time_init() - philo->beging;
+	printf("%ld philo %d is sleeping!\n" ,philo->now,philo->num);
+	usleep(philo->t_sleep * 1000);
 		return 1;
 }
 
 int  eat(t_list *philo)
 {
-	// int i;
-	// if(philo->num % 2 == 0 && philo->num != 1 && philo->head->eat_time == 0)
-	// 	usleep(philo->t_eat);
-	// // philo->waiting = 1;
+	if(philo->num % 2 == 0 && philo->num != 1 && philo->num_eat == 0)
+		usleep(philo->t_eat);
 	pthread_mutex_lock( &philo->fork_m); 
-	printf("%d take fork \n", philo->num );
 	pthread_mutex_lock( &philo->next->fork_m);
-	// // philo->waiting = 0;
-	// if(!lock_check_life_data(philo) || philo->num_eat == philo->max_eat)
-	// {
-	// 	pthread_mutex_unlock(&philo->fork_m);
-	// 	pthread_mutex_unlock(&philo->next->fork_m);
-	// 		return 0;
-	// }
-	// pthread_mutex_unlock(&philo->head->death_p);
-	// printf("%d philo %d take fork!\n%d philo %d take fork!\n",philo->now,philo->num ,philo->now,philo->num);
-	// printf("%d philo %d is eating\n" ,philo->now,philo->num);
-	usleep(philo->t_eat);
-	// philo->last_eat = 0;
-	// // philo->now += philo->t_eat;
-	// // if(philo->next->waiting == 1)
-	// // {
-	// // 	philo->next->now = philo->now;
-	// // 	philo->next->last_eat = philo->t_eat;
-	// // }
-	// philo->num_eat += 1;
-	// philo->last_eat = philo->t_eat;
+	if(!lock_check_life_data(philo) || philo->num_eat == philo->max_eat)
+	{
+		pthread_mutex_unlock(&philo->fork_m);
+		pthread_mutex_unlock(&philo->next->fork_m);
+			return 0;
+	}
+	philo->now = time_init() - philo->beging;
+	printf("%ld philo %d take fork!\n%ld philo %d take fork!\n",philo->now,philo->num ,philo->now,philo->num);
+	printf("%ld philo %d is eating\n" ,philo->now,philo->num);
+	philo->last_eat = time_init();
+	usleep(philo->t_eat * 1000);
+	philo->num_eat += 1;
+	pthread_mutex_unlock(&philo->head->death_p);
 	pthread_mutex_unlock(&philo->fork_m);
 	pthread_mutex_unlock(&philo->next->fork_m);
 	return 1;
@@ -120,28 +108,14 @@ int  eat(t_list *philo)
 
 void *rotine(void *tmp)
 {
-	t_list *philo;
-	int i = 0;
-	philo = (t_list*) tmp;
-	while(i < 10)
+	while(1)
 	{
-		if(!eat(philo))
-		{
-			// pthread_mutex_destroy(&philo->head->death_p);
+		if(!eat((t_list*) tmp))
 			break;
-		}
-		if(!ft_sleep(philo))
-		{
-			// pthread_mutex_destroy(&philo->head->death_p);
+		if(!ft_sleep((t_list*) tmp))
 			break;
-		}
-		if(!think(philo))
-		{
-			// pthread_mutex_destroy(&philo->head->death_p);
+		if(!think((t_list*) tmp))
 			break;
-			i++;
-			printf("iiiiiii>>>>>>===%d",i);
-		}
 	}
 	return NULL;
 }
@@ -154,6 +128,7 @@ void    int_rotine(t_list *tmp)
 	{
 		pthread_mutex_init(&tmp->fork_m, NULL);
 		pthread_mutex_init(&tmp->death_p, NULL);
+		tmp->beging = time_init();
 		pthread_create(&tmp->eat_time, NULL,&rotine,tmp);
 		tmp = tmp->next;
 		i++;
@@ -162,14 +137,15 @@ void    int_rotine(t_list *tmp)
 	while(i <= tmp->philo_num + 1)
 	{
 		pthread_join(tmp->eat_time,NULL);
-		death(tmp);
 		pthread_mutex_destroy(&tmp->fork_m);
 		tmp = tmp->next;
 		i++;
 	}
+	pthread_mutex_destroy(&tmp->death_p);
 }
 
 void	star(t_list *philo)
 {
 		int_rotine(philo);
+		
 }

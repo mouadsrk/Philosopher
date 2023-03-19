@@ -48,19 +48,34 @@ void *routine(void *  tata)
     return NULL;
 }
 
+long time_now(void)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+
 int main() 
 {
-    t_data *data;
-    data = stnew();
-    data->next= stnew();
-    pthread_mutex_init(&data->mutex, NULL);
-    pthread_mutex_init(&data->next->mutex, NULL);
-    pthread_create(&data->th, NULL,&routine,data);
-    pthread_create(&data->next->th, NULL,&routine, data->next);
-    pthread_join(data->th,NULL);
-    pthread_join(data->next->th,NULL);
-    pthread_mutex_destroy(&data->mutex);
-    pthread_mutex_destroy(&data->next->mutex);
-    printf("NUMBER of mails: %d \n",data->mails);
-    printf("NUMBER of mails2: %d \n",data->next->mails);
+    struct timeval tv;
+    long begin , now;
+    int i;
+    i = 0;
+    begin = time_now();
+    printf("%ld\n",begin);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    usleep(100 * 1000);
+    now = time_now() - begin;
+    printf("%ld\n",now);
+    // // usleep(4000);
+    // now = time_now() ;
+    // printf("%ld\n",now);
+    
+
 }
