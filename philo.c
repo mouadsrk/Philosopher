@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/19 01:32:42 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/19 14:48:37 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void data_make(int arc, char ** argv, t_list **philo)
 	(*philo)->death_satus = 0;
 	(*philo)->head = (*philo);
 }
-
 
 void check_arg(int arc, char **argv)
 {

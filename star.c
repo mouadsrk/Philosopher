@@ -6,27 +6,31 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/19 01:37:27 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/19 23:21:21 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "philo.h"
 
-int death(t_list *philo)
+int death(t_list *philo , long begin)
 {
+	long now;
 
+	now = time_init() - begin;
 	philo = philo->head;
-	if(philo->head->death_satus == 1)
-		return 1;
 	while( philo->num <= philo->philo_num)
 	{
-		if(philo->now - philo->last_eat >= philo->t_die)
+		pthread_mutex_lock(&philo->check_last_eat);
+		if(now - philo->last_eat >= philo->t_die)
 			{
-				philo->now = time_init() - philo->beging;
-				printf("%ld philo %d is death\n",philo->now,philo->num);
+				pthread_mutex_unlock(&philo->check_last_eat);
+				printf("%ld philo %d is death\n",now,philo->num);
+				pthread_mutex_lock(&philo->head->death_p);
 				philo->head->death_satus = 1;
+				pthread_mutex_unlock(&philo->head->death_p);
 				return 1;
 			}
+		pthread_mutex_unlock(&philo->check_last_eat);
 		if( philo->num == philo->philo_num)
 			break;
 		philo = philo->next;
@@ -34,73 +38,86 @@ int death(t_list *philo)
 	return 0;
 }
 
-int max_eat(t_list *philo)
-{
-	int i;
+// int max_eat(t_list *philo)
+// {
+// 	int i;
 
-	i = 0;
-	while(i < philo->philo_num)
+// 	i = 0;
+// 	while(i < philo->philo_num)
+// 	{
+// 		pthread_mutex_lock(&philo->check_num_eat);
+// 		if(philo->num_eat < philo->max_eat)
+// 		{
+// 			pthread_mutex_unlock(&philo->check_num_eat);
+// 			pthread_mutex_unlock(&philo->head->death_p);
+// 			return 0;
+// 		}
+// 		pthread_mutex_unlock(&philo->check_num_eat);
+// 		philo = philo->next;
+// 		i++;
+// 	}
+// 	return 1;
+// }
+
+
+
+int	think(t_list *philo , long beging)
+{
+	long now;
+
+	pthread_mutex_lock(&philo->head->death_p);
+	if(philo->head->death_satus == 1)
 	{
-		if(philo->num_eat < philo->max_eat)
-			return 0;
-		philo = philo->next;
-		i++;
+		pthread_mutex_unlock(&philo->head->death_p);
+		return 0;
 	}
-	return 1;
-}
-
-
-int lock_check_life_data(t_list *tmp)
-{
-	pthread_mutex_lock(&tmp->head->death_p);
-	if(death(tmp) || ((max_eat(tmp) && tmp->max_eat != -1)))
-		{
-			pthread_mutex_unlock(&tmp->head->death_p);
-			return 0;
-		}
-	return 1;
-}
-
-int	think(t_list *philo)
-{
-	if(!lock_check_life_data(philo))
-		return 0;
 	pthread_mutex_unlock(&philo->head->death_p);
-	philo->now = time_init() - philo->beging;
-	printf("%ld philo %d is thinking!\n" ,philo->now, philo->num);
+	now = time_init() - beging;
+	printf("%ld philo %d is thinking!\n" ,now, philo->num);
 	return 1;
 }
 
-int	ft_sleep(t_list *philo)
+int	ft_sleep(t_list *philo , long beging)
 {
-	if(!lock_check_life_data(philo))
+	long now;
+
+	pthread_mutex_lock(&philo->head->death_p);
+	if(philo->head->death_satus == 1)
+	{
+		pthread_mutex_unlock(&philo->head->death_p);
 		return 0;
+	}
 	pthread_mutex_unlock(&philo->head->death_p);
-	philo->now = time_init() - philo->beging;
-	printf("%ld philo %d is sleeping!\n" ,philo->now,philo->num);
-	usleep(philo->t_sleep * 1000);
+	now = time_init() - beging;
+	printf("%ld philo %d is sleeping!\n" ,now,philo->num);
+	ft_usleep(philo->t_sleep);
 		return 1;
 }
 
-int  eat(t_list *philo)
+int  eat(t_list *philo , long beging , int i)
 {
-	if(philo->num % 2 == 0 && philo->num != 1 && philo->num_eat == 0)
-		usleep(philo->t_eat);
+	long now;
+
+	if(philo->num % 2 == 0 && philo->num != 1 && i == 0)
+		ft_usleep(philo->t_eat);
 	pthread_mutex_lock( &philo->fork_m); 
 	pthread_mutex_lock( &philo->next->fork_m);
-	if(!lock_check_life_data(philo) || philo->num_eat == philo->max_eat)
+	pthread_mutex_lock(&philo->check_last_eat);
+	now = time_init() - beging;
+	philo->last_eat = now;
+	pthread_mutex_unlock(&philo->check_last_eat);
+	pthread_mutex_lock(&philo->head->death_p);
+	if(philo->head->death_satus == 1)
 	{
+		pthread_mutex_unlock(&philo->head->death_p);
 		pthread_mutex_unlock(&philo->fork_m);
 		pthread_mutex_unlock(&philo->next->fork_m);
-			return 0;
+		return 0;
 	}
-	philo->now = time_init() - philo->beging;
-	printf("%ld philo %d take fork!\n%ld philo %d take fork!\n",philo->now,philo->num ,philo->now,philo->num);
-	printf("%ld philo %d is eating\n" ,philo->now,philo->num);
-	philo->last_eat = time_init();
-	usleep(philo->t_eat * 1000);
-	philo->num_eat += 1;
 	pthread_mutex_unlock(&philo->head->death_p);
+	printf("%ld philo %d take fork!\n%ld philo %d take fork!\n",now,philo->num ,now,philo->num);
+	printf("%ld philo %d is eating\n" ,now,philo->num);
+	ft_usleep(philo->t_eat);
 	pthread_mutex_unlock(&philo->fork_m);
 	pthread_mutex_unlock(&philo->next->fork_m);
 	return 1;
@@ -108,44 +125,103 @@ int  eat(t_list *philo)
 
 void *rotine(void *tmp)
 {
-	while(1)
+	int i;
+	int j;
+	long beging;
+
+	i = 0;
+	pthread_mutex_lock(&((t_list *)tmp)->check_max_eat);
+	beging = ((t_list *)tmp)->beging;
+	j = ((t_list *)tmp)->max_eat;
+	pthread_mutex_unlock(&((t_list *)tmp)->check_max_eat);
+	while((i <= j && j != -1) || (i <= 2147483647 && j == -1))
 	{
-		if(!eat((t_list*) tmp))
+		if(!eat((t_list*) tmp , beging , i))
 			break;
-		if(!ft_sleep((t_list*) tmp))
+		i++;
+		if (i == j)
 			break;
-		if(!think((t_list*) tmp))
+		if(!ft_sleep((t_list*) tmp , beging))
 			break;
+		if(!think((t_list*) tmp, beging))
+			break;
+	}
+	if(i == j)
+	{
+		// printf("done\n");
+		pthread_mutex_lock(&((t_list *)tmp)->check_max_eat);
+		((t_list *)tmp)->max_eat = -2;
+		pthread_mutex_unlock(&((t_list *)tmp)->check_max_eat);
 	}
 	return NULL;
 }
+
+void check_life_(t_list * tmp, long begin)
+{
+	int i;
+	usleep(tmp->t_die * 1000);
+	while(1)
+	{
+		if(death(tmp, begin))
+			return;
+		i = 1;
+		tmp = tmp->head;
+		pthread_mutex_lock(&(tmp)->check_max_eat);
+		if(tmp->max_eat != -1)
+		{
+			pthread_mutex_lock(&(tmp)->check_max_eat);
+			while(tmp->max_eat == -2)
+				{
+					pthread_mutex_unlock(&(tmp)->check_max_eat);
+					i++;
+					tmp = tmp->next;
+					pthread_mutex_lock(&(tmp)->check_max_eat);
+				}
+			if (i == tmp->philo_num - 1)
+			{
+				pthread_mutex_unlock(&(tmp)->check_max_eat);
+				return;
+			}
+		}
+		else
+		pthread_mutex_unlock(&(tmp)->check_max_eat);
+	}
+}
+
 void    int_rotine(t_list *tmp)
 {
 	int i;
-
+	int time;
 	i = 0;
+	pthread_mutex_init(&tmp->death_p, NULL);
 	while(i < tmp->philo_num)
 	{
 		pthread_mutex_init(&tmp->fork_m, NULL);
-		pthread_mutex_init(&tmp->death_p, NULL);
+		pthread_mutex_init(&tmp->check_last_eat, NULL);
+		pthread_mutex_init(&tmp->check_max_eat, NULL);
 		tmp->beging = time_init();
 		pthread_create(&tmp->eat_time, NULL,&rotine,tmp);
 		tmp = tmp->next;
 		i++;
 	}
-		i = 1;
-	while(i <= tmp->philo_num + 1)
+	i = 0;
+	time = tmp->head->beging;
+	while(i < tmp->philo_num)
 	{
-		pthread_join(tmp->eat_time,NULL);
 		pthread_mutex_destroy(&tmp->fork_m);
+		pthread_mutex_destroy(&tmp->check_last_eat);
+		pthread_mutex_destroy(&tmp->check_max_eat);
 		tmp = tmp->next;
 		i++;
 	}
+	// check_life_(tmp->head, time);
+	// usleep(1000 * 1000 * 10);
+	// tf_thead_datach();
+	while(1)
 	pthread_mutex_destroy(&tmp->death_p);
 }
 
 void	star(t_list *philo)
 {
-		int_rotine(philo);
-		
+	int_rotine(philo);	
 }

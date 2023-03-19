@@ -59,20 +59,21 @@ long time_now(void)
 int main() 
 {
     struct timeval tv;
-    long begin , now;
+    long long begin , now;
     int i;
     i = 0;
     begin = time_now();
-    printf("%ld\n",begin);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
-    usleep(100 * 1000);
+    printf("%lld\n",begin);
+    usleep(700 * 1000);
+    // usleep(100 * 1000);
+    // usleep(100 * 1000);
+    // usleep(100 * 1000);
+    // usleep(100 * 1000);
+    // usleep(100 * 1000);
+    // usleep(100 * 1000);
+    // usleep(100 * 1000);
     now = time_now() - begin;
-    printf("%ld\n",now);
+    printf("%lld\n",now);
     // // usleep(4000);
     // now = time_now() ;
     // printf("%ld\n",now);
