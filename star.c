@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/19 23:21:21 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/20 01:00:33 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,14 @@ int death(t_list *philo , long begin)
 		if(now - philo->last_eat >= philo->t_die)
 			{
 				pthread_mutex_unlock(&philo->check_last_eat);
+				// printf("now %ld  begin%ld \n",now,begin);
+				ft_usleep(2);	
 				printf("%ld philo %d is death\n",now,philo->num);
 				pthread_mutex_lock(&philo->head->death_p);
 				philo->head->death_satus = 1;
 				pthread_mutex_unlock(&philo->head->death_p);
-				return 1;
+				// return 1;
+				exit(0);
 			}
 		pthread_mutex_unlock(&philo->check_last_eat);
 		if( philo->num == philo->philo_num)
@@ -132,6 +135,7 @@ void *rotine(void *tmp)
 	i = 0;
 	pthread_mutex_lock(&((t_list *)tmp)->check_max_eat);
 	beging = ((t_list *)tmp)->beging;
+	// printf("%ld\n",beging);
 	j = ((t_list *)tmp)->max_eat;
 	pthread_mutex_unlock(&((t_list *)tmp)->check_max_eat);
 	while((i <= j && j != -1) || (i <= 2147483647 && j == -1))
@@ -159,29 +163,32 @@ void *rotine(void *tmp)
 void check_life_(t_list * tmp, long begin)
 {
 	int i;
-	usleep(tmp->t_die * 1000);
+	ft_usleep(tmp->t_die);
+
 	while(1)
 	{
+		// printf(">>>>>%ld\n",begin);
 		if(death(tmp, begin))
 			return;
 		i = 1;
 		tmp = tmp->head;
 		pthread_mutex_lock(&(tmp)->check_max_eat);
-		if(tmp->max_eat != -1)
+		if (tmp->max_eat != -1)
 		{
-			pthread_mutex_lock(&(tmp)->check_max_eat);
-			while(tmp->max_eat == -2)
+			while(tmp->max_eat == -2 && i <= tmp->philo_num)
 				{
 					pthread_mutex_unlock(&(tmp)->check_max_eat);
-					i++;
 					tmp = tmp->next;
 					pthread_mutex_lock(&(tmp)->check_max_eat);
+					i++;
 				}
-			if (i == tmp->philo_num - 1)
+			if (i == tmp->philo_num + 1)
 			{
 				pthread_mutex_unlock(&(tmp)->check_max_eat);
 				return;
 			}
+			else
+				pthread_mutex_unlock(&(tmp)->check_max_eat);
 		}
 		else
 		pthread_mutex_unlock(&(tmp)->check_max_eat);
@@ -191,7 +198,7 @@ void check_life_(t_list * tmp, long begin)
 void    int_rotine(t_list *tmp)
 {
 	int i;
-	int time;
+	long time;
 	i = 0;
 	pthread_mutex_init(&tmp->death_p, NULL);
 	while(i < tmp->philo_num)
@@ -204,8 +211,10 @@ void    int_rotine(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
-	i = 0;
 	time = tmp->head->beging;
+	check_life_(tmp->head, time);
+	// usleep(1000 * 1000 * 4);
+	i = 0;
 	while(i < tmp->philo_num)
 	{
 		pthread_mutex_destroy(&tmp->fork_m);
@@ -214,10 +223,10 @@ void    int_rotine(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
-	// check_life_(tmp->head, time);
+
 	// usleep(1000 * 1000 * 10);
 	// tf_thead_datach();
-	while(1)
+	// while(1)
 	pthread_mutex_destroy(&tmp->death_p);
 }
 
