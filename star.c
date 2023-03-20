@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/20 01:00:33 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/20 01:18:17 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,8 @@ int death(t_list *philo , long begin)
 		if(now - philo->last_eat >= philo->t_die)
 			{
 				pthread_mutex_unlock(&philo->check_last_eat);
-				// printf("now %ld  begin%ld \n",now,begin);
 				ft_usleep(2);	
-				printf("%ld philo %d is death\n",now,philo->num);
+				printf("%ld philo %d is death\n",now + 2,philo->num);
 				pthread_mutex_lock(&philo->head->death_p);
 				philo->head->death_satus = 1;
 				pthread_mutex_unlock(&philo->head->death_p);
@@ -135,7 +134,6 @@ void *rotine(void *tmp)
 	i = 0;
 	pthread_mutex_lock(&((t_list *)tmp)->check_max_eat);
 	beging = ((t_list *)tmp)->beging;
-	// printf("%ld\n",beging);
 	j = ((t_list *)tmp)->max_eat;
 	pthread_mutex_unlock(&((t_list *)tmp)->check_max_eat);
 	while((i <= j && j != -1) || (i <= 2147483647 && j == -1))
@@ -167,7 +165,6 @@ void check_life_(t_list * tmp, long begin)
 
 	while(1)
 	{
-		// printf(">>>>>%ld\n",begin);
 		if(death(tmp, begin))
 			return;
 		i = 1;
@@ -195,6 +192,9 @@ void check_life_(t_list * tmp, long begin)
 	}
 }
 
+
+
+
 void    int_rotine(t_list *tmp)
 {
 	int i;
@@ -211,9 +211,15 @@ void    int_rotine(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
+	i = 0;
+	while(i < tmp->philo_num)
+	{
+		pthread_detach(tmp->eat_time);
+		tmp = tmp->next;
+		i++;
+	}
 	time = tmp->head->beging;
 	check_life_(tmp->head, time);
-	// usleep(1000 * 1000 * 4);
 	i = 0;
 	while(i < tmp->philo_num)
 	{
@@ -223,11 +229,7 @@ void    int_rotine(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
-
-	// usleep(1000 * 1000 * 10);
-	// tf_thead_datach();
-	// while(1)
-	pthread_mutex_destroy(&tmp->death_p);
+	
 }
 
 void	star(t_list *philo)
