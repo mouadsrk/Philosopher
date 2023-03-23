@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/20 00:26:32 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/20 19:09:23 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,17 +89,6 @@ int main (int arc , char ** argv)
 	star(philo);
 }
 
-
-
-
-
-	// tmp = philo;
-	// while(i < 30)
-	// {
-	// 	printf("philo %d time death %d time eat %d time sleep %d num of philo %d max eat %d eat-num%d\n",tmp->num,tmp->t_die,tmp->t_eat,tmp->t_sleep, tmp->philo_num, tmp->max_eat, tmp->num_eat);
-	// 	i++;
-	// 	tmp = tmp->next;
-	// }
 
 
 

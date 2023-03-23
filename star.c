@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/20 01:18:17 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/23 16:32:30 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ int death(t_list *philo , long begin)
 				pthread_mutex_lock(&philo->head->death_p);
 				philo->head->death_satus = 1;
 				pthread_mutex_unlock(&philo->head->death_p);
-				// return 1;
-				exit(0);
+				return 1;
+				
 			}
 		pthread_mutex_unlock(&philo->check_last_eat);
 		if( philo->num == philo->philo_num)
@@ -39,28 +39,6 @@ int death(t_list *philo , long begin)
 	}
 	return 0;
 }
-
-// int max_eat(t_list *philo)
-// {
-// 	int i;
-
-// 	i = 0;
-// 	while(i < philo->philo_num)
-// 	{
-// 		pthread_mutex_lock(&philo->check_num_eat);
-// 		if(philo->num_eat < philo->max_eat)
-// 		{
-// 			pthread_mutex_unlock(&philo->check_num_eat);
-// 			pthread_mutex_unlock(&philo->head->death_p);
-// 			return 0;
-// 		}
-// 		pthread_mutex_unlock(&philo->check_num_eat);
-// 		philo = philo->next;
-// 		i++;
-// 	}
-// 	return 1;
-// }
-
 
 
 int	think(t_list *philo , long beging)
@@ -161,7 +139,7 @@ void *rotine(void *tmp)
 void check_life_(t_list * tmp, long begin)
 {
 	int i;
-	ft_usleep(tmp->t_die);
+	ft_usleep(tmp->t_die - 1);
 
 	while(1)
 	{
@@ -220,6 +198,7 @@ void    int_rotine(t_list *tmp)
 	}
 	time = tmp->head->beging;
 	check_life_(tmp->head, time);
+	// while(1)
 	i = 0;
 	while(i < tmp->philo_num)
 	{
@@ -229,7 +208,6 @@ void    int_rotine(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
-	
 }
 
 void	star(t_list *philo)
