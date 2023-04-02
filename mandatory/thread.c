@@ -55,6 +55,15 @@ long time_now(void)
     return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
+void	ft_usleep(long int time_in_ms)
+{
+	long int	start_time;
+
+	start_time = 0;
+	start_time = time_now();
+	while ((time_now() - start_time) < time_in_ms)
+		usleep(100);
+}
 
 int main() 
 {
@@ -63,8 +72,10 @@ int main()
     int i;
     i = 0;
     begin = time_now();
-    printf("%lld\n",begin);
-    usleep(700 * 1000);
+    gettimeofday(&tv, NULL);
+    // printf("%ld\n%d\n", tv.tv_sec, tv.tv_usec);
+    printf("%ld\n",tv.tv_sec * 1000+ tv.tv_usec / 1000);
+    // ft_usleep(-1000);
     // usleep(100 * 1000);
     // usleep(100 * 1000);
     // usleep(100 * 1000);

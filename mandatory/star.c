@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/23 16:32:30 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/30 22:24:33 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,13 @@ int death(t_list *philo , long begin)
 		pthread_mutex_lock(&philo->check_last_eat);
 		if(now - philo->last_eat >= philo->t_die)
 			{
-				pthread_mutex_unlock(&philo->check_last_eat);
-				ft_usleep(2);	
-				printf("%ld philo %d is death\n",now + 2,philo->num);
 				pthread_mutex_lock(&philo->head->death_p);
+				pthread_mutex_unlock(&philo->check_last_eat);
+				ft_usleep(2);
+				printf("%ld philo %d is death\n",now + 2,philo->num);
 				philo->head->death_satus = 1;
 				pthread_mutex_unlock(&philo->head->death_p);
-				return 1;
-				
+				return 1;		
 			}
 		pthread_mutex_unlock(&philo->check_last_eat);
 		if( philo->num == philo->philo_num)
@@ -78,10 +77,14 @@ int  eat(t_list *philo , long beging , int i)
 {
 	long now;
 
-	if(philo->num % 2 == 0 && philo->num != 1 && i == 0)
+	if(philo->num  % 2 == 0 && philo->num != 1 && i == 1)
 		ft_usleep(philo->t_eat);
 	pthread_mutex_lock( &philo->fork_m); 
+	now = time_init() - beging;
+	printf("%ld philo %d take fork!\n",now,philo->num);
 	pthread_mutex_lock( &philo->next->fork_m);
+	now = time_init() - beging;
+	printf("%ld philo %d take fork!\n",now,philo->num);
 	pthread_mutex_lock(&philo->check_last_eat);
 	now = time_init() - beging;
 	philo->last_eat = now;
@@ -95,7 +98,6 @@ int  eat(t_list *philo , long beging , int i)
 		return 0;
 	}
 	pthread_mutex_unlock(&philo->head->death_p);
-	printf("%ld philo %d take fork!\n%ld philo %d take fork!\n",now,philo->num ,now,philo->num);
 	printf("%ld philo %d is eating\n" ,now,philo->num);
 	ft_usleep(philo->t_eat);
 	pthread_mutex_unlock(&philo->fork_m);
@@ -109,26 +111,27 @@ void *rotine(void *tmp)
 	int j;
 	long beging;
 
-	i = 0;
+	i = 1;
 	pthread_mutex_lock(&((t_list *)tmp)->check_max_eat);
 	beging = ((t_list *)tmp)->beging;
 	j = ((t_list *)tmp)->max_eat;
 	pthread_mutex_unlock(&((t_list *)tmp)->check_max_eat);
-	while((i <= j && j != -1) || (i <= 2147483647 && j == -1))
+	// printf("i = %d , j = %d\n", i,j);
+	while((i <= j && j != -1) || (j == -1))
 	{
 		if(!eat((t_list*) tmp , beging , i))
 			break;
 		i++;
-		if (i == j)
+		if (i > j && j != -1)
 			break;
 		if(!ft_sleep((t_list*) tmp , beging))
 			break;
 		if(!think((t_list*) tmp, beging))
 			break;
 	}
-	if(i == j)
+	if(i > j)
 	{
-		// printf("done\n");
+
 		pthread_mutex_lock(&((t_list *)tmp)->check_max_eat);
 		((t_list *)tmp)->max_eat = -2;
 		pthread_mutex_unlock(&((t_list *)tmp)->check_max_eat);
@@ -140,7 +143,6 @@ void check_life_(t_list * tmp, long begin)
 {
 	int i;
 	ft_usleep(tmp->t_die - 1);
-
 	while(1)
 	{
 		if(death(tmp, begin))
@@ -198,7 +200,6 @@ void    int_rotine(t_list *tmp)
 	}
 	time = tmp->head->beging;
 	check_life_(tmp->head, time);
-	// while(1)
 	i = 0;
 	while(i < tmp->philo_num)
 	{

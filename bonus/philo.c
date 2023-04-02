@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/03/20 19:09:23 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/03/30 22:01:09 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void exit_error(char *str)
 	write(1,str,ft_strlen(str));
 	exit(1);
 }
-
 
 void data_make(int arc, char ** argv, t_list **philo)
 {
@@ -45,9 +44,9 @@ void data_make(int arc, char ** argv, t_list **philo)
 		tmp->max_eat = (*philo)->max_eat; 
 		tmp->philo_num = (*philo)->philo_num ;
 		tmp->head = (*philo);
+		tmp->death_satus = 0;
 	}
 	tmp->next = *philo;
-	(*philo)->death_satus = 0;
 	(*philo)->head = (*philo);
 }
 
