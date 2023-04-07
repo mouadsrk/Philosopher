@@ -6,30 +6,18 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:02 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/02 00:45:05 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/07 15:17:36 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philo.h"
+#include"philo.h"
 
-void	ft_usleep(long int time_in_ms )
+int	ft_strlen(char *str)
 {
-	long int	start_time;
-	start_time = 0;
-	start_time = time_init();
+	int	i;
 
-	while (((time_init()) - start_time) < time_in_ms)
-	{
-		usleep(100);
-	}
-}
-
-int ft_strlen(char *str)
-{
-	int i;
-
-	i =0;
-	while(str[i])
+	i = 0;
+	while (str[i])
 		i++;
 	return (i);
 }
@@ -66,15 +54,20 @@ int	ft_atoi(const char *str)
 	return ((int)(r * s));
 }
 
-t_list	*ft_lstnew(int content)
+t_list	*ft_lstnew(int content, int arc, char **argv)
 {
 	t_list	*s;
 
 	s = malloc (sizeof(t_list));
 	if (s == NULL)
 		return (NULL);
-	s->max_eat = -1; 
-	// s->now = 0;
+	s->philo_num = ft_atoi(argv[1]);
+	s->t_die = ft_atoi(argv[2]);
+	s->t_eat = ft_atoi(argv[3]);
+	s->t_sleep = ft_atoi(argv[4]);
+	s->max_eat = -1;
+	if (arc == 6)
+		s->max_eat = ft_atoi(argv[5]);
 	s->num = content;
 	s->next = NULL;
 	return (s);
@@ -83,25 +76,18 @@ t_list	*ft_lstnew(int content)
 void	ft_lstclear(t_list	**lst)
 {
 	t_list	*tmp;
+	int		i;
+	int		j;
 
+	i = 1;
+	j = (*lst)->philo_num;
 	if (!lst)
 		return ;
-	while (*lst)
+	while (*lst && i <= j)
 	{
 		tmp = (*lst)->next;
 		free(*lst);
 		(*lst) = tmp;
+		i++;
 	}
-}
-
-void ft_putchar(char c)
-{
-	write(1, &c, 1 );
-}
-
-long time_init(void)
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
