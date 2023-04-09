@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/07 15:19:54 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/09 01:43:31 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,18 @@ void	ft_printf(t_list *p, char *str)
 
 int	eat_sleep_think(t_list *philo, int i)
 {
-	if (philo->num % 2 == 0)
+	if (philo->num % 2 == 0 && i == 1)
 		ft_usleep(60, philo);
 	sem_wait(philo->sema->forks);
 	ft_printf(philo, "take fork");
-	if (philo->t_eat * 2 >= philo->t_die && philo->num % 2 == 0)
+	if ((philo->t_eat * 2 >= philo->t_die && philo->num % 2 == 0 && i == 1)
+		|| philo->philo_num == 1)
 	{
 		ft_usleep(philo->t_die + 1, philo);
 		exit(1);
 	}
+	if (philo->philo_num == 1)
+		exit(1);
 	sem_wait(philo->sema->forks);
 	ft_printf(philo, "take fork");
 	sem_wait(philo->sema->death_p);
@@ -100,7 +103,6 @@ void	star_norm(t_list *tmp)
 void	star(t_list *tmp)
 {
 	int		i;
-	long	time;
 	t_sem	var;
 
 	i = 0;

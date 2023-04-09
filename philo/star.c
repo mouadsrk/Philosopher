@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/07 01:25:44 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/09 21:39:31 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	death(t_list *philo, long begin)
 			pthread_mutex_lock(&philo->head->death_p);
 			pthread_mutex_unlock(&philo->check_last_eat);
 			ft_usleep(2);
-			printf("%ld philo %d is death\n", now + 2, philo->num);
+			ft_printf(philo, "died", begin);
 			philo->head->death_satus = 1;
 			pthread_mutex_unlock(&philo->head->death_p);
 			return (1);
@@ -39,7 +39,7 @@ int	death(t_list *philo, long begin)
 	return (0);
 }
 
-int	check_life_norm(t_list *tmp, long begin)
+int	check_life_norm(t_list *tmp)
 {
 	int	i;
 
@@ -72,7 +72,7 @@ void	check_life_(t_list *tmp, long begin)
 		pthread_mutex_lock(&(tmp)->check_max_eat);
 		if (tmp->max_eat != -1)
 		{
-			if (!check_life_norm(tmp, begin))
+			if (!check_life_norm(tmp))
 				return ;
 		}
 		else
@@ -82,8 +82,11 @@ void	check_life_(t_list *tmp, long begin)
 
 void	star_norm(t_list *tmp)
 {
-	int	i;
+	int		i;
+	long	time;
 
+	time = tmp->head->beging;
+	check_life_(tmp->head, time);
 	i = 0;
 	while (i < tmp->philo_num)
 	{
@@ -93,15 +96,17 @@ void	star_norm(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
+	pthread_mutex_destroy(&tmp->head->print);
+	pthread_mutex_destroy(&tmp->head->death_p);
 }
 
 void	star(t_list *tmp)
 {
 	int		i;
-	long	time;
 
 	i = 0;
 	pthread_mutex_init(&tmp->death_p, NULL);
+	pthread_mutex_init(&tmp->print, NULL);
 	while (i < tmp->philo_num)
 	{
 		pthread_mutex_init(&tmp->fork_m, NULL);
@@ -119,7 +124,5 @@ void	star(t_list *tmp)
 		tmp = tmp->next;
 		i++;
 	}
-	time = tmp->head->beging;
-	check_life_(tmp->head, time);
 	star_norm(tmp);
 }

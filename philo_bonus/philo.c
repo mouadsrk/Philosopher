@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/07 15:02:43 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/08 20:53:14 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,7 @@ int	digit(int arc, char **argv)
 		while (argv[i][j])
 		{
 			if (ft_isdigit(argv[i][j]) == 0)
-			{
-				printf("error\n");
 				return (0);
-			}
 			j++;
 		}
 		i++;
@@ -66,7 +63,9 @@ int	arg(int arc, char **argv)
 	i = 1;
 	while (i < arc)
 	{
-		if (ft_atoi(argv[i]) == -1)
+		if (argv[i][0] == '\0' || argv[i] == NULL)
+			return (0);
+		if (ft_atoi(argv[i]) == -1 || ft_atoi(argv[1]) == 0)
 			return (0);
 		i++;
 	}
@@ -79,7 +78,7 @@ int	main(int arc, char **argv)
 	int		i;
 
 	i = 0;
-	if ((arc != 5 && arc != 6) || !digit(arc, argv) || arg(arc, argv) == -1)
+	if ((arc != 5 && arc != 6) || !digit(arc, argv) || arg(arc, argv) == 0)
 	{
 		printf("error \n");
 		return (0);

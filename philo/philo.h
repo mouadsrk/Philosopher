@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:27:04 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/07 01:26:13 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/09 21:47:43 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ typedef struct s_list
 	pthread_mutex_t		check_last_eat;
 	pthread_mutex_t		fork_m;
 	pthread_mutex_t		death_p;
-	pthread_mutex_t		check_now;
+	pthread_mutex_t		print;
 	pthread_t			eat_time;
 	int					death_satus;
 	int					num;
@@ -41,6 +41,7 @@ typedef struct s_list
 	struct s_list		*head;
 }	t_list;
 
+void	ft_printf(t_list *p, char *str, long beging);
 long	time_init(void);
 int		ft_isdigit(int c);
 void	ft_usleep(long int time_in_ms);

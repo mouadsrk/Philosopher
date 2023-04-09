@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/07 01:24:45 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/07 01:26:35 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/09 21:37:39 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 int	think(t_list *philo,	long beging)
 {
-	long	now;
-
 	pthread_mutex_lock(&philo->head->death_p);
 	if (philo->head->death_satus == 1)
 	{
@@ -23,15 +21,12 @@ int	think(t_list *philo,	long beging)
 		return (0);
 	}
 	pthread_mutex_unlock(&philo->head->death_p);
-	now = time_init() - beging;
-	printf("%ld philo %d is thinking!\n", now, philo->num);
+	ft_printf(philo, "is thinking", beging);
 	return (1);
 }
 
 int	ft_sleep(t_list *philo, long beging)
 {
-	long	now;
-
 	pthread_mutex_lock(&philo->head->death_p);
 	if (philo->head->death_satus == 1)
 	{
@@ -39,8 +34,7 @@ int	ft_sleep(t_list *philo, long beging)
 		return (0);
 	}
 	pthread_mutex_unlock(&philo->head->death_p);
-	now = time_init() - beging;
-	printf("%ld philo %d is sleeping!\n", now, philo->num);
+	ft_printf(philo, "is sleeping", beging);
 	ft_usleep(philo->t_sleep);
 	return (1);
 }
@@ -50,9 +44,9 @@ int	eat(t_list *philo, long beging, int i)
 	if (philo->num % 2 == 0 && philo->num != 1 && i == 2)
 		ft_usleep(philo->t_eat);
 	pthread_mutex_lock(&philo->fork_m);
-	printf("%ld philo %d take fork!\n", time_init() - beging, philo->num);
+	ft_printf(philo, "has taken a fork", beging);
 	pthread_mutex_lock(&philo->next->fork_m);
-	printf("%ld philo %d take fork!\n", time_init() - beging, philo->num);
+	ft_printf(philo, "has taken a fork", beging);
 	pthread_mutex_lock(&philo->check_last_eat);
 	philo->last_eat = time_init() - beging;
 	pthread_mutex_unlock(&philo->check_last_eat);
@@ -65,7 +59,7 @@ int	eat(t_list *philo, long beging, int i)
 		return (0);
 	}
 	pthread_mutex_unlock(&philo->head->death_p);
-	printf("%ld philo %d is eating\n", time_init() - beging, philo->num);
+	ft_printf(philo, "is eating", beging);
 	ft_usleep(philo->t_eat);
 	pthread_mutex_unlock(&philo->fork_m);
 	pthread_mutex_unlock(&philo->next->fork_m);
