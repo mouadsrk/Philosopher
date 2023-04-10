@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/07 01:24:45 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/09 21:37:39 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/10 20:14:47 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	ft_sleep(t_list *philo, long beging)
 }
 
 int	eat(t_list *philo, long beging, int i)
-{
+{	
 	if (philo->num % 2 == 0 && philo->num != 1 && i == 2)
 		ft_usleep(philo->t_eat);
 	pthread_mutex_lock(&philo->fork_m);

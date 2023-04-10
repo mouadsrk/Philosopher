@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 05:08:05 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/08 20:21:50 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/10 20:27:44 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int	arg(int arc, char **argv)
 	{
 		if (argv[i][0] == '\0' || argv[i] == NULL)
 			return (0);
-		if (ft_atoi(argv[i]) == -1 || ft_atoi(argv[1]) == 0)
+		if (ft_atoi(argv[i]) == -1)
 			return (0);
 		i++;
 	}
@@ -79,6 +79,8 @@ int	main(int arc, char **argv)
 		printf("error \n");
 		return (0);
 	}
+	if (ft_atoi(argv[1]) == 0)
+		return (0);
 	data_make(arc, argv, &philo);
 	star(philo);
 	ft_lstclear(&philo);

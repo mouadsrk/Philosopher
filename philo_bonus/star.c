@@ -6,7 +6,7 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 06:42:28 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/04/09 01:43:31 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/04/10 20:20:42 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ void	ft_printf(t_list *p, char *str)
 	if (time_init() - p->last_eat >= p->t_die)
 	{
 		sem_wait(p->sema->print);
-		printf("%ld philo %d is dead\n", time_init() - p->beging, p->num);
+		printf("%ld %d died\n", time_init() - p->beging, p->num);
 		exit(1);
 	}
 	sem_wait(p->sema->print);
 	now = time_init() - p->beging;
-	printf("%ld philo %d %s\n", now, p->num, str);
+	printf("%ld %d %s\n", now, p->num, str);
 	sem_post(p->sema->print);
 }
 
@@ -33,8 +33,8 @@ int	eat_sleep_think(t_list *philo, int i)
 	if (philo->num % 2 == 0 && i == 1)
 		ft_usleep(60, philo);
 	sem_wait(philo->sema->forks);
-	ft_printf(philo, "take fork");
-	if ((philo->t_eat * 2 >= philo->t_die && philo->num % 2 == 0 && i == 1)
+	ft_printf(philo, "has taken a fork");
+	if ((philo->t_eat * 2 > philo->t_die && philo->num % 2 == 0 && i == 1)
 		|| philo->philo_num == 1)
 	{
 		ft_usleep(philo->t_die + 1, philo);
@@ -43,7 +43,7 @@ int	eat_sleep_think(t_list *philo, int i)
 	if (philo->philo_num == 1)
 		exit(1);
 	sem_wait(philo->sema->forks);
-	ft_printf(philo, "take fork");
+	ft_printf(philo, "has taken a fork");
 	sem_wait(philo->sema->death_p);
 	philo->last_eat = time_init();
 	sem_post(philo->sema->death_p);
@@ -72,6 +72,8 @@ void	rotine(t_list *tmp )
 		eat_sleep_think(tmp, i);
 		i++;
 	}
+	tmp = tmp->head;
+	ft_lstclear(&tmp);
 	exit(0);
 }
 
@@ -89,7 +91,7 @@ void	star_norm(t_list *tmp)
 			i = 0;
 			while (i < tmp->philo_num)
 			{
-				kill(tmp->philo_rotine, SIGKILL);
+				kill(tmp->philo_rotine, SIGTERM);
 				i++;
 				tmp = tmp->next;
 			}
