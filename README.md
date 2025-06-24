@@ -38,7 +38,7 @@
 ```bash
 # Clone repo and compile
 git clone git@github.com:mouadsrk/Philosopher.git
-cd philosophers
+cd Philosopher
 make
 
 # Run with arguments: number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_must_eat]
